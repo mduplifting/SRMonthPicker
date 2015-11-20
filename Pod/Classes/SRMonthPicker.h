@@ -134,4 +134,15 @@
  */
 -(id)initWithDate:(NSDate *)date calendar:(NSCalendar *)calendar;
 
+
+/**
+ Initializes and returns a newly allocated month picker with the specified
+ date, current calendar and locale.
+ @param date The date to be represented by the month picker -  the day
+ component will be ignored.
+ @param calendar The calendar to used by the date.
+ @param locale The locale to use in month names.
+ */
+-(id)initWithDate:(NSDate *)date calendar:(NSCalendar *)calendar locale:(NSLocale *)locale;
+
 @end

@@ -51,19 +51,28 @@ static const NSInteger SRDefaultMinimumYear = 1;
 static const NSInteger SRDefaultMaximumYear = 99999;
 static const NSCalendarUnit SRDateComponentFlags = NSCalendarUnitMonth | NSCalendarUnitYear;
 
+- (id)initWithDate:(NSDate *)date calendar:(NSCalendar *)calendar locale:(NSLocale *)locale
+{
+	self = [super init];
+
+	if (self) {
+
+		self.monthFormatter.locale = locale;
+
+		_calendar = calendar;
+		[self p_prepare];
+		[self setDate:date];
+
+		self.showsSelectionIndicator = YES;
+	}
+
+	return self;
+}
+
 - (id)initWithDate:(NSDate *)date calendar:(NSCalendar *)calendar
 {
-    self = [super init];
-    
-    if (self)
-    {
-        _calendar = calendar;
-        [self p_prepare];
-        [self setDate:date];
-        self.showsSelectionIndicator = YES;
-    }
-    
-    return self;
+	self = [self initWithDate:date calendar:calendar locale:[NSLocale currentLocale]];
+	return self;
 }
 
 -(id)initWithDate:(NSDate *)date
@@ -82,17 +91,18 @@ static const NSCalendarUnit SRDateComponentFlags = NSCalendarUnitMonth | NSCalen
 {
     self = [super initWithCoder:aDecoder];
     
-    if (self)
-    {
+    if (self) {
         _minimumYear = SRDefaultMinimumYear;
         _maximumYear = SRDefaultMaximumYear;
-        [self p_prepare];
-        if (!_calendar)
-            _calendar = [NSCalendar currentCalendar];
-        if (!_date)
-            [self setDate:[NSDate date]];
+		[self p_prepare];
+		if (!_calendar) {
+			_calendar = [NSCalendar currentCalendar];
+		}
+		if (!_date) {
+			[self setDate:[NSDate date]];
+		}
     }
-    
+
     return self;
 }
 
@@ -104,12 +114,13 @@ static const NSCalendarUnit SRDateComponentFlags = NSCalendarUnitMonth | NSCalen
     {
         _minimumYear = SRDefaultMinimumYear;
         _maximumYear = SRDefaultMaximumYear;
-        
         [self p_prepare];
-        if (!_calendar)
+		if (!_calendar) {
             _calendar = [NSCalendar currentCalendar];
-        if (!_date)
+		}
+		if (!_date) {
             [self setDate:[NSDate date]];
+		}
     }
     
     return self;
@@ -171,7 +182,7 @@ static const NSCalendarUnit SRDateComponentFlags = NSCalendarUnitMonth | NSCalen
 
 -(NSArray *)monthStrings
 {
-    return self.monthFormatter.monthSymbols;
+    return self.monthFormatter.standaloneMonthSymbols;
 }
 
 -(void)setYearFirst:(BOOL)yearFirst
@@ -303,8 +314,8 @@ static const NSCalendarUnit SRDateComponentFlags = NSCalendarUnitMonth | NSCalen
     
     NSDateFormatter* formatter = nil;
     
-    if (component == self.monthComponent) {
-        label.text = [self.monthStrings objectAtIndex:(row % self.monthStrings.count)];
+	if (component == self.monthComponent) {
+		label.text = [[self.monthStrings objectAtIndex:(row % self.monthStrings.count)] capitalizedStringWithLocale:self.monthFormatter.locale];
         label.textAlignment = component ? NSTextAlignmentLeft : NSTextAlignmentRight;
         formatter = self.monthFormatter;
     } else {
